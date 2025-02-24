@@ -37,7 +37,6 @@ out/
 .vscode/
 
 # ------------ 민감 정보
-*.properties
 application.properties
 
 
