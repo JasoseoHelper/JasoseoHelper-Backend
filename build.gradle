@@ -40,6 +40,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testImplementation 'org.assertj:assertj-core:3.24.2' // assertj 의존성 추가
 
+    // redis embedded
+    implementation 'it.ozimov:embedded-redis:0.7.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
 }
 
 tasks.named('test') {
