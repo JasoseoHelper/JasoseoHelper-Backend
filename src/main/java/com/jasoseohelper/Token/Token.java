@@ -1,4 +1,4 @@
-package com.jasoseohelper.redis.TestToken;
+package com.jasoseohelper.Token;
 
 
 import lombok.AccessLevel;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.repository.CrudRepository;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,4 +1,4 @@
-package com.jasoseohelper.redis.TestToken;
+package com.jasoseohelper.Token;
 
 import org.springframework.data.repository.CrudRepository;
 

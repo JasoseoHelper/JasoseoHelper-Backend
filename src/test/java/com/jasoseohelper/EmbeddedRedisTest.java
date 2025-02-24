@@ -1,14 +1,13 @@
-package com.redis;
+package com.jasoseohelper;
 
-
-import com.jasoseohelper.redis.TestToken.TokenRepository;
+import com.jasoseohelper.Token.TokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import com.jasoseohelper.Token.Token;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import com.jasoseohelper.redis.TestToken.Token;
-import com.jasoseohelper.redis.TestToken.TokenRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
