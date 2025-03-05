@@ -1,4 +1,4 @@
-package com.jasoseohelper.redis.config;
+package com.jasoseohelper.config.redis;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

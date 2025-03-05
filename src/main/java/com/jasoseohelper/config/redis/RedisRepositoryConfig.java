@@ -1,4 +1,4 @@
-package com.jasoseohelper.redis.config;
+package com.jasoseohelper.config.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Value;
