@@ -4,8 +4,8 @@ import com.jasoseohelper.auth.dto.AuthRequestDTO;
 import com.jasoseohelper.auth.service.AuthService;
 import com.jasoseohelper.auth.util.TokenProvider;
 import com.jasoseohelper.security.UserDetailsImpl;
-import com.jasoseohelper.user.DTO.UserResponseDTO;
-import com.jasoseohelper.user.service.UserService;
+import com.jasoseohelper.user.dto.UserResponseDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;

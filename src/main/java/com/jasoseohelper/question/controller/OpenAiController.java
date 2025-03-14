@@ -1,4 +1,4 @@
-package com.jasoseohelper.question;
+package com.jasoseohelper.question.controller;
 
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;

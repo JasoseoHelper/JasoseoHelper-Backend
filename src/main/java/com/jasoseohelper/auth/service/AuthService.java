@@ -1,7 +1,7 @@
 package com.jasoseohelper.auth.service;
 
 import com.jasoseohelper.auth.dto.AuthRequestDTO;
-import com.jasoseohelper.user.DTO.UserResponseDTO;
+import com.jasoseohelper.user.dto.UserResponseDTO;
 import com.jasoseohelper.user.entity.User;
 import com.jasoseohelper.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

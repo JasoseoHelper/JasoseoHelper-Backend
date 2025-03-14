@@ -1,6 +1,6 @@
 package com.jasoseohelper.user.service;
 
-import com.jasoseohelper.user.DTO.UserRequestDTO;
+import com.jasoseohelper.user.dto.UserRequestDTO;
 import com.jasoseohelper.user.entity.User;
 import com.jasoseohelper.user.repository.UserRepository;
 import java.util.HashMap;

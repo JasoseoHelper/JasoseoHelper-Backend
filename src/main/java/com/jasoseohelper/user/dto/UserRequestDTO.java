@@ -1,4 +1,4 @@
-package com.jasoseohelper.user.DTO;
+package com.jasoseohelper.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
