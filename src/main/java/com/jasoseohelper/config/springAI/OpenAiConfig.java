@@ -15,14 +15,19 @@ public class OpenAiConfig {
 
     @Bean
     public OpenAiApi openAiApi() {
-        return new OpenAiApi(apiKey);
+        return OpenAiApi.builder()
+                .apiKey(apiKey)
+                .build();
     }
 
     @Bean
-    public OpenAiChatModel openAiChatModel(OpenAiApi openAiApi) {
+    public OpenAiChatModel openAiChatModel(OpenAiApi openAiApi){
         OpenAiChatOptions options = OpenAiChatOptions.builder()
                 .model("gpt-4o-mini")
                 .build();
-        return new OpenAiChatModel(openAiApi, options);
+        return OpenAiChatModel.builder()
+                .openAiApi(openAiApi)
+                .defaultOptions(options)
+                .build();
     }
 }
