@@ -26,8 +26,7 @@ public class ResumeController {
 
     @PatchMapping("/{rid}")
     public ResponseEntity<ResumeResponseDTO> modifyResume(@PathVariable("rid") Long rid, @RequestBody ResumeRequestDTO resumeRequestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        resumeRequestDTO.setRid(rid);
-        return new ResponseEntity<>(service.modify(resumeRequestDTO, userDetails.getUser()), HttpStatus.OK);
+        return new ResponseEntity<>(service.modify(resumeRequestDTO, rid, userDetails.getUser()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{rid}")

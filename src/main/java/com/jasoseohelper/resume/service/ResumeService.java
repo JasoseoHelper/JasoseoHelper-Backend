@@ -27,13 +27,12 @@ public class ResumeService {
     /* 자소서 추가 */
     @Transactional
     public ResumeResponseDTO register(ResumeRequestDTO resumeRequestDTO, User user) {
-        verify(resumeRequestDTO.getRid(), user);
         Resume resume = dtoToEntity(resumeRequestDTO, user);
         Resume savedResume = repository.save(resume);
 
         // 자소서 첫번째 문항 생성
         Question question = new Question();
-        question.setResume(resume);
+        question.setResume(savedResume);
         question.setUser(user);
         questionRepository.save(question);
 
@@ -42,30 +41,32 @@ public class ResumeService {
 
 
     /* 자소서 수정 */
-    public ResumeResponseDTO modify(ResumeRequestDTO resumeRequestDTO, User user) {
-        verify(resumeRequestDTO.getRid(), user);
-        Resume resume = dtoToEntity(resumeRequestDTO, user);
+    public ResumeResponseDTO modify(ResumeRequestDTO resumeRequestDTO, Long rid, User user) {
+        Resume resume = existResume(rid, user);
+        resume.setResume_name(resumeRequestDTO.getResumeName());
+        resume.setD_date(resumeRequestDTO.getD_date());
         Timestamp modifyDate = Timestamp.from(ZonedDateTime.now().toInstant());
         resume.setM_date(modifyDate);
         Resume savedResume = repository.save(resume);
-        if(!savedResume.getM_date().equals(modifyDate)) throw new IllegalStateException("Faild Resume modify for request: "+resumeRequestDTO.toString());
+        if(!savedResume.getM_date().equals(modifyDate)) throw new IllegalStateException("Faild Resume modify for request: "+resumeRequestDTO);
         return entityToDto(savedResume);
     }
 
     /* 자소서 삭제 */
     public boolean delete(Long rid, User user) {
-        verify(rid, user);
+        existResume(rid, user);
         repository.deleteById(rid);
         if(repository.existsById(rid)) throw new IllegalStateException("Faild Resume delete for rid: " + rid + " and uid: " + user.getUid());
         return true;
     }
 
-    /* 검증 */
-    private void verify(Long rid, User user){
+    /* 존재하는 Resume 반환. 없으면 Exception 발생 */
+    private Resume existResume(Long rid, User user){
         // 존재하는 resume 인지
         Resume resume = repository.findById(rid).orElseThrow(()-> new NoSuchElementException("Resume not found for rid: " + rid));
         // 해당 resume에 접근 권한이 있는 user 인지
         if(! resume.getUser().getUid().equals(user.getUid())) throw new AccessDeniedException("Forbidden for rid: " + rid + " and uid: " + user.getUid());
+        return resume;
     }
 
     public Resume dtoToEntity(ResumeRequestDTO resumeDTO, User user) {

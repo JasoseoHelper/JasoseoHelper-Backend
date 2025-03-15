@@ -11,8 +11,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeRequestDTO {
-    private Long rid;
-    private Long uid;
     private String resumeName;
     private Timestamp d_date;
 }
