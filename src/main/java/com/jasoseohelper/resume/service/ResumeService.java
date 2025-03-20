@@ -9,6 +9,9 @@ import com.jasoseohelper.resume.repository.ResumeRepository;
 import com.jasoseohelper.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,14 @@ import java.util.NoSuchElementException;
 public class ResumeService {
     private final ResumeRepository repository;
     private final QuestionRepository questionRepository;
+
+    /* 자소서 목록 조회 */
+    @Transactional(readOnly = true)
+    public Page<ResumeResponseDTO> getUserResumes(Long uid, int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Resume> resumes = repository.findByUser_Uid(uid, pageable);
+        return resumes.map(this::entityToDto);
+    }
 
     /* 자소서 추가 */
     @Transactional
@@ -68,6 +79,7 @@ public class ResumeService {
         if(! resume.getUser().getUid().equals(user.getUid())) throw new AccessDeniedException("Forbidden for rid: " + rid + " and uid: " + user.getUid());
         return resume;
     }
+
 
     public Resume dtoToEntity(ResumeRequestDTO resumeDTO, User user) {
         return Resume.builder()
