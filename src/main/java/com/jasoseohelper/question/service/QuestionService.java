@@ -1,5 +1,6 @@
 package com.jasoseohelper.question.service;
 
+import com.jasoseohelper.question.dto.QuestionDetailDTO;
 import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.entity.Question;
 import com.jasoseohelper.question.entity.Version;
@@ -9,6 +10,7 @@ import com.jasoseohelper.resume.entity.Resume;
 import com.jasoseohelper.resume.repository.ResumeRepository;
 import com.jasoseohelper.user.entity.User;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +54,59 @@ public class QuestionService {
         question.setResume(resume);
 
         return questionRepository.save(question);
+    }
+
+    /* 문항 버전 리스트 불러오기 */
+    public List<QuestionDetailDTO> getVersionsByQuestion(Long qid, User user){
+        Question question = existQuestion(qid, user);
+        List<Version> versions = versionRepository.findByQuestion(question);
+        return versions.stream().map(this::EntityToDtoForVersion).collect(Collectors.toList());
+    }
+
+    /* 특정 버전 불러오기 */
+    public QuestionDetailDTO getVersion(Long qid, Long vid, User user){
+        Version version = existVersion(qid, vid, user);
+        return EntityToDtoForVersion(version);
+    }
+
+    /* 존재하는 Question 반환. 없을 때, 접근 제한 있을 때 Exception 발생 */
+    private Question existQuestion(Long qid, User user){
+        // 존재하는 Question 인지
+        Question question = questionRepository.findById(qid).orElseThrow(()-> new NoSuchElementException("Question not found for qid: " + qid));
+        // 해당 Question 접근 권한이 있는 user 인지
+        if(! question.getUser().getUid().equals(user.getUid())) throw new AccessDeniedException("Forbidden for qid: " + qid + " and uid: " + user.getUid());
+        return question;
+    }
+
+    /* 존재하는 Version 반환. 없을 때, 접근 제한 있을 때 Exception 발생 */
+    private Version existVersion(Long qid, Long vid, User user){
+        Question question = existQuestion(qid, user);
+        // 존재하는 Version 인지
+        Version version = versionRepository.findByQuestionAndVid(question, vid)
+                .orElseThrow(()-> new NoSuchElementException("Question Version not found for qid: " + qid+" / vid: "+vid));
+        return version;
+    }
+
+
+    public QuestionDetailDTO EntityToDtoForVersion(Version version) {
+        return QuestionDetailDTO.builder()
+                .qid(version.getQuestion().getQid())
+                .title(version.getTitle())
+                .guide(version.getGuide())
+                .m_date(version.getM_date())
+                .content(version.getContent())
+                .feedback(version.getFeedback())
+                .build();
+    }
+
+    public QuestionDetailDTO DtoToEntityForVersion(Version version) {
+        return QuestionDetailDTO.builder()
+                .qid(version.getQuestion().getQid())
+                .title(version.getTitle())
+                .guide(version.getGuide())
+                .m_date(version.getM_date())
+                .content(version.getContent())
+                .feedback(version.getFeedback())
+                .build();
     }
 }

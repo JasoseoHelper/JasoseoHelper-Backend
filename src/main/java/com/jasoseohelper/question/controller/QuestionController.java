@@ -20,6 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/question")
 public class QuestionController {
-    private final QuestionService questionService;
+    private final QuestionService service;
 
+    @GetMapping("{qid}/version")
+    public ResponseEntity<List<QuestionDetailDTO>> getVersionsByQuestion(@PathVariable("qid") Long qid,
+                                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(service.getVersionsByQuestion(qid, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("{qid}/version/{vid}")
+    public ResponseEntity<QuestionDetailDTO> getVersion(@PathVariable("qid") Long qid, @PathVariable("vid") Long vid,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(service.getVersion(qid, vid, userDetails.getUser()), HttpStatus.OK);
+    }
 }
