@@ -1,5 +1,6 @@
 package com.jasoseohelper.question.controller;
 
+import com.jasoseohelper.question.dto.QuestionDetailDTO;
 import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.service.QuestionService;
 import com.jasoseohelper.security.UserDetailsImpl;
@@ -17,14 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Log4j2
 @RestController
-@RequestMapping("/resume")
+@RequestMapping("/question")
 public class QuestionController {
     private final QuestionService questionService;
 
-    @GetMapping("/{rid}")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
-                                                                         UserDetailsImpl userDetails){
-        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
-        return new ResponseEntity<>(questions, HttpStatus.OK);
-    }
 }

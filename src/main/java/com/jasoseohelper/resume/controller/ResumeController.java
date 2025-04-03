@@ -1,5 +1,7 @@
 package com.jasoseohelper.resume.controller;
 
+import com.jasoseohelper.question.dto.QuestionResponseDTO;
+import com.jasoseohelper.question.service.QuestionService;
 import com.jasoseohelper.resume.dto.ResumeRequestDTO;
 import com.jasoseohelper.resume.dto.ResumeResponseDTO;
 import com.jasoseohelper.resume.service.ResumeService;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Log4j2
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/resume")
 public class ResumeController {
     private final ResumeService service;
+    private final QuestionService questionService;
 
     @GetMapping
     public ResponseEntity<Page<ResumeResponseDTO>> getResumes(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size){
@@ -39,6 +44,13 @@ public class ResumeController {
     @DeleteMapping("/{rid}")
     public ResponseEntity<Boolean> deleteResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<>(service.delete(rid, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("/{rid}")
+    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
+    UserDetailsImpl userDetails){
+        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
+        return new ResponseEntity<>(questions, HttpStatus.OK);
     }
 
 }
