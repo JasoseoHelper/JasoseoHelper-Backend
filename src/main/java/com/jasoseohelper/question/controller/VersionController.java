@@ -1,7 +1,5 @@
 package com.jasoseohelper.question.controller;
 
-import com.jasoseohelper.question.dto.QuestionRequestDTO;
-import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.dto.VersionRequestDTO;
 import com.jasoseohelper.question.dto.VersionResponseDTO;
 import com.jasoseohelper.question.service.VersionService;
