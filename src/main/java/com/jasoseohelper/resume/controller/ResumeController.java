@@ -6,7 +6,6 @@ import com.jasoseohelper.resume.dto.ResumeRequestDTO;
 import com.jasoseohelper.resume.dto.ResumeResponseDTO;
 import com.jasoseohelper.resume.service.ResumeService;
 import com.jasoseohelper.security.UserDetailsImpl;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -50,6 +51,13 @@ public class ResumeController {
     @DeleteMapping("/{rid}")
     public ResponseEntity<Boolean> deleteResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<>(resumeService.delete(rid, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("/{rid}")
+    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
+    UserDetailsImpl userDetails){
+        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
+        return new ResponseEntity<>(questions, HttpStatus.OK);
     }
 
 }

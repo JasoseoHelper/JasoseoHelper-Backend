@@ -38,5 +38,5 @@ public class Version {
     @ManyToOne
     @JoinColumn(name="qid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Question qid;
+    private Question question;
 }

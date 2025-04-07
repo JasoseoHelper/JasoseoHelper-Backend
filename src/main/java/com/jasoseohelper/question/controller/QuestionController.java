@@ -1,5 +1,6 @@
 package com.jasoseohelper.question.controller;
 
+import com.jasoseohelper.question.dto.QuestionDetailDTO;
 import com.jasoseohelper.question.dto.QuestionRequestDTO;
 import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.service.QuestionService;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestionController {
     private final QuestionService questionService;
 
+}
     @GetMapping("/{qid}")
     public ResponseEntity<QuestionResponseDTO> getQuestionByQid(@PathVariable("qid") Long qid, @AuthenticationPrincipal
     UserDetailsImpl userDetails){
@@ -44,4 +46,13 @@ public class QuestionController {
     public ResponseEntity<Boolean> deleteQuestion(@PathVariable("qid") Long qid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<>(questionService.deleteQuestion(qid, userDetails.getUser()), HttpStatus.OK);
     }
-}
+    @GetMapping("{qid}/version")
+    public ResponseEntity<List<QuestionDetailDTO>> getVersionsByQuestion(@PathVariable("qid") Long qid,
+                                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(questionService.getVersionsByQuestion(qid, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("{qid}/version/{vid}")
+    public ResponseEntity<QuestionDetailDTO> getVersion(@PathVariable("qid") Long qid, @PathVariable("vid") Long vid,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(questionService.getVersion(qid, vid, userDetails.getUser()), HttpStatus.OK);
