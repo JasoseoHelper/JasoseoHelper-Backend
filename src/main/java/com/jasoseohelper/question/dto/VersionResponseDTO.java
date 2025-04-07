@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QuestionResponseDTO {
-    private Long qid;
+public class VersionResponseDTO {
+    private Long vid;
     private String title;
-    private String guide;
-    private Timestamp c_date;
     private String content;
+    private String guide;
     private String feedback;
+    private Timestamp m_date;
+    private Long qid;
 }
