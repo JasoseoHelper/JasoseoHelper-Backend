@@ -26,8 +26,7 @@ public class ResumeController {
     private final QuestionService questionService;
 
     @GetMapping("/{rid}")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
-    UserDetailsImpl userDetails){
+    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails){
         List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
         return new ResponseEntity<>(questions, HttpStatus.OK);
     }
@@ -52,12 +51,4 @@ public class ResumeController {
     public ResponseEntity<Boolean> deleteResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<>(resumeService.delete(rid, userDetails.getUser()), HttpStatus.OK);
     }
-
-    @GetMapping("/{rid}")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
-    UserDetailsImpl userDetails){
-        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
-        return new ResponseEntity<>(questions, HttpStatus.OK);
-    }
-
 }
