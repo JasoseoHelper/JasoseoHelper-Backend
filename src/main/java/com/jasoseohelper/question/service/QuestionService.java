@@ -1,5 +1,6 @@
 package com.jasoseohelper.question.service;
 
+import com.jasoseohelper.question.dto.QuestionRequestDTO;
 import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.entity.Question;
 import com.jasoseohelper.question.entity.Version;
@@ -49,7 +50,7 @@ public class QuestionService {
     public QuestionResponseDTO getQuestion(Long qid, User user){
         Question question = existQuestion(qid, user);
 
-        Version version = versionRepository.findLatestVersionByQid(question)
+        Version version = versionRepository.findLatestVersionByQuestion(question)
                 .orElseThrow(() -> new IllegalStateException("No version found for this question"));
 
         return QuestionResponseDTO.builder()
@@ -100,7 +101,7 @@ public class QuestionService {
     public boolean deleteQuestion(Long qid, User user){
         Question question = existQuestion(qid, user);
 
-        versionRepository.deleteAllByQid(question);
+        versionRepository.deleteAllByQuestion(question);
 
         questionRepository.delete(question);
 
@@ -108,14 +109,14 @@ public class QuestionService {
     }
 
     /* 문항 버전 리스트 불러오기 */
-    public List<QuestionDetailDTO> getVersionsByQuestion(Long qid, User user){
+    public List<QuestionResponseDTO> getVersionsByQuestion(Long qid, User user){
         Question question = existQuestion(qid, user);
         List<Version> versions = versionRepository.findByQuestion(question);
         return versions.stream().map(this::EntityToDtoForVersion).collect(Collectors.toList());
     }
 
     /* 특정 버전 불러오기 */
-    public QuestionDetailDTO getVersion(Long qid, Long vid, User user){
+    public QuestionResponseDTO getVersion(Long qid, Long vid, User user){
         Version version = existVersion(qid, vid, user);
         return EntityToDtoForVersion(version);
     }
@@ -148,8 +149,8 @@ public class QuestionService {
     }
 
 
-    public QuestionDetailDTO EntityToDtoForVersion(Version version) {
-        return QuestionDetailDTO.builder()
+    public QuestionResponseDTO EntityToDtoForVersion(Version version) {
+        return QuestionResponseDTO.builder()
                 .qid(version.getQuestion().getQid())
                 .title(version.getTitle())
                 .guide(version.getGuide())
@@ -159,8 +160,8 @@ public class QuestionService {
                 .build();
     }
 
-    public QuestionDetailDTO DtoToEntityForVersion(Version version) {
-        return QuestionDetailDTO.builder()
+    public QuestionResponseDTO DtoToEntityForVersion(Version version) {
+        return QuestionResponseDTO.builder()
                 .qid(version.getQuestion().getQid())
                 .title(version.getTitle())
                 .guide(version.getGuide())

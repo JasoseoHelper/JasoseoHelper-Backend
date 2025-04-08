@@ -15,6 +15,7 @@ public class QuestionResponseDTO {
     private String title;
     private String guide;
     private Timestamp c_date;
+    private Timestamp m_date;
     private String content;
     private String feedback;
 }
