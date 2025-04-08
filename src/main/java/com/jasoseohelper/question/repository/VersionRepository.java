@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface VersionRepository extends JpaRepository<Version, Long> {
-    @Query("SELECT v FROM Version v WHERE v.qid = :qid ORDER BY v.m_date DESC LIMIT 1")
-    Optional<Version> findLatestVersionByQid(@Param("qid") Question qid);
-    void deleteAllByQid(Question question);
+    @Query("SELECT v FROM Version v WHERE v.question = :question ORDER BY v.m_date DESC LIMIT 1")
+    Optional<Version> findLatestVersionByQuestion(@Param("question") Question qid);
+    void deleteAllByQuestion(Question question);
     Optional<Version> findByQuestionAndVid(Question question, Long vid);
     List<Version> findByQuestion(Question question);
 }

@@ -28,7 +28,7 @@ public class VersionService {
                 .orElseThrow(() -> new IllegalArgumentException("Version not found with id: " + vid));
 
         // qid 버전 업데이트
-        Question question = version.getQid();
+        Question question = version.getQuestion();
         question.updateVersion(vid);
         questionRepository.save(question);
 
@@ -41,7 +41,7 @@ public class VersionService {
 
     public Version createIntialVersion(Question question){
         Version build = Version.builder()
-                .qid(question)
+                .question(question)
                 .title("")
                 .content("")
                 .guide("")
@@ -57,7 +57,7 @@ public class VersionService {
                 .content(dto.getContent())
                 .guide(dto.getGuide())
                 .feedback(dto.getFeedback())
-                .qid(question)
+                .question(question)
                 .m_date(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
     }
@@ -70,7 +70,7 @@ public class VersionService {
                 .guide(entity.getGuide())
                 .feedback(entity.getFeedback())
                 .m_date(entity.getM_date())
-                .qid(entity.getQid().getQid())
+                .qid(entity.getQuestion().getQid())
                 .build();
     }
 }
