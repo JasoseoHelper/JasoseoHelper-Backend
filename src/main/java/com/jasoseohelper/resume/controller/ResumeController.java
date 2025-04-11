@@ -22,35 +22,33 @@ import java.util.List;
 @RestController
 @RequestMapping("/resume")
 public class ResumeController {
-    private final ResumeService service;
+    private final ResumeService resumeService;
     private final QuestionService questionService;
+
+    @GetMapping("/{rid}")
+    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
+        return new ResponseEntity<>(questions, HttpStatus.OK);
+    }
 
     @GetMapping
     public ResponseEntity<Page<ResumeResponseDTO>> getResumes(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size){
-        Page<ResumeResponseDTO> response = service.getUserResumes(userDetails.getUser().getUid(), page, size);
+        Page<ResumeResponseDTO> response = resumeService.getUserResumes(userDetails.getUser().getUid(), page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<ResumeResponseDTO> registerResume(@RequestBody ResumeRequestDTO resumeRequestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<>(service.register(resumeRequestDTO, userDetails.getUser()), HttpStatus.CREATED);
+        return new ResponseEntity<>(resumeService.register(resumeRequestDTO, userDetails.getUser()), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{rid}")
     public ResponseEntity<ResumeResponseDTO> modifyResume(@PathVariable("rid") Long rid, @RequestBody ResumeRequestDTO resumeRequestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<>(service.modify(resumeRequestDTO, rid, userDetails.getUser()), HttpStatus.OK);
+        return new ResponseEntity<>(resumeService.modify(resumeRequestDTO, rid, userDetails.getUser()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{rid}")
     public ResponseEntity<Boolean> deleteResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<>(service.delete(rid, userDetails.getUser()), HttpStatus.OK);
+        return new ResponseEntity<>(resumeService.delete(rid, userDetails.getUser()), HttpStatus.OK);
     }
-
-    @GetMapping("/{rid}")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestionByResume(@PathVariable("rid") Long rid, @AuthenticationPrincipal
-    UserDetailsImpl userDetails){
-        List<QuestionResponseDTO> questions = questionService.getQuestionsByResume(rid, userDetails.getUser());
-        return new ResponseEntity<>(questions, HttpStatus.OK);
-    }
-
 }

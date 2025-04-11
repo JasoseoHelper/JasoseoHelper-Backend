@@ -1,6 +1,6 @@
 package com.jasoseohelper.question.service;
 
-import com.jasoseohelper.question.dto.QuestionDetailDTO;
+import com.jasoseohelper.question.dto.QuestionRequestDTO;
 import com.jasoseohelper.question.dto.QuestionResponseDTO;
 import com.jasoseohelper.question.entity.Question;
 import com.jasoseohelper.question.entity.Version;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Log4j2
@@ -25,46 +26,97 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final ResumeRepository resumeRepository;
     private final VersionRepository versionRepository;
+    private final VersionService versionService;
 
     /* 자소서 문항 조회 (qid, title) */
     public List<QuestionResponseDTO> getQuestionsByResume(Long rid, User user){
-        Resume resume = resumeRepository.findById(rid)
-                .orElseThrow(() -> new IllegalArgumentException("Resume not found with id: " + rid));
-
-        if(!resume.getUser().getUid().equals(user.getUid())){
-            throw new AccessDeniedException("You don't have access to this resume.");
-        }
+        Resume resume = existResume(rid, user);
 
         List<Question> questions = questionRepository.findByResume(resume);
         return questions.stream()
                 .map(q -> {
                     Optional<Version> versionOpt = versionRepository.findById(q.getVersion());
                     String title = versionOpt.map(Version::getTitle).orElse("제목 없음");
-                    return new QuestionResponseDTO(q.getQid(), title);
+
+                    return QuestionResponseDTO.builder()
+                            .qid(q.getQid())
+                            .title(title)
+                            .build();
                 })
                 .collect(Collectors.toList());
     }
 
-    /* 문항 추가 */
-    public Question register(Long rid, User user) {
-        Resume resume = new Resume();
-        resume.setRid(rid);
-        Question question = new Question();
-        question.setUser(user);
-        question.setResume(resume);
+    /* 문항 조회 */
+    public QuestionResponseDTO getQuestion(Long qid, User user){
+        Question question = existQuestion(qid, user);
 
-        return questionRepository.save(question);
+        Version version = versionRepository.findLatestVersionByQuestion(question)
+                .orElseThrow(() -> new IllegalStateException("No version found for this question"));
+
+        return QuestionResponseDTO.builder()
+                .qid(question.getQid())
+                .title(version.getTitle())
+                .content(version.getContent())
+                .c_date(question.getC_date())
+                .guide(version.getGuide())
+                .feedback(version.getFeedback())
+                .build();
+    }
+
+    /* 문항 저장 */
+    public QuestionResponseDTO saveQuestion(QuestionRequestDTO questionRequestDTO, User user){
+        Resume resume = existResume(questionRequestDTO.getRid(), user);
+
+        Question build = Question.builder()
+                .version(questionRequestDTO.getVersion())
+                .resume(resume)
+                .user(user)
+                .build();
+        Question save = questionRepository.save(build);
+
+        return getQuestion(save.getQid(), user);
+    }
+
+    /* 문항 추가 */
+    @Transactional
+    public QuestionResponseDTO addQuestion(Long rid, User user) {
+        Resume resume = existResume(rid, user);
+
+        Question question = questionRepository.save(Question.builder()
+                .resume(resume)
+                .user(user)
+                .build());
+
+        // version save
+        Version version = versionService.createIntialVersion(question);
+
+        question.updateVersion(version.getVid());
+        Question save = questionRepository.save(question);
+
+        return getQuestion(save.getQid(), user);
+    }
+
+    /* 문항 삭제 */
+    @Transactional
+    public boolean deleteQuestion(Long qid, User user){
+        Question question = existQuestion(qid, user);
+
+        versionRepository.deleteAllByQuestion(question);
+
+        questionRepository.delete(question);
+
+        return true;
     }
 
     /* 문항 버전 리스트 불러오기 */
-    public List<QuestionDetailDTO> getVersionsByQuestion(Long qid, User user){
+    public List<QuestionResponseDTO> getVersionsByQuestion(Long qid, User user){
         Question question = existQuestion(qid, user);
         List<Version> versions = versionRepository.findByQuestion(question);
         return versions.stream().map(this::EntityToDtoForVersion).collect(Collectors.toList());
     }
 
     /* 특정 버전 불러오기 */
-    public QuestionDetailDTO getVersion(Long qid, Long vid, User user){
+    public QuestionResponseDTO getVersion(Long qid, Long vid, User user){
         Version version = existVersion(qid, vid, user);
         return EntityToDtoForVersion(version);
     }
@@ -87,9 +139,18 @@ public class QuestionService {
         return version;
     }
 
+    /* 존재하는 Resume 반환. 없으면 Exception 발생 */
+    private Resume existResume(Long rid, User user){
+        // 존재하는 resume 인지
+        Resume resume = resumeRepository.findById(rid).orElseThrow(()-> new NoSuchElementException("Resume not found for rid: " + rid));
+        // 해당 resume에 접근 권한이 있는 user 인지
+        if(! resume.getUser().getUid().equals(user.getUid())) throw new AccessDeniedException("Forbidden for rid: " + rid + " and uid: " + user.getUid());
+        return resume;
+    }
 
-    public QuestionDetailDTO EntityToDtoForVersion(Version version) {
-        return QuestionDetailDTO.builder()
+
+    public QuestionResponseDTO EntityToDtoForVersion(Version version) {
+        return QuestionResponseDTO.builder()
                 .qid(version.getQuestion().getQid())
                 .title(version.getTitle())
                 .guide(version.getGuide())
@@ -99,8 +160,8 @@ public class QuestionService {
                 .build();
     }
 
-    public QuestionDetailDTO DtoToEntityForVersion(Version version) {
-        return QuestionDetailDTO.builder()
+    public QuestionResponseDTO DtoToEntityForVersion(Version version) {
+        return QuestionResponseDTO.builder()
                 .qid(version.getQuestion().getQid())
                 .title(version.getTitle())
                 .guide(version.getGuide())

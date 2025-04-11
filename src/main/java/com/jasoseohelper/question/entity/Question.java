@@ -37,6 +37,10 @@ public class Question {
     @JoinColumn(name="uid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    public void updateVersion(Long versionId){
+        this.version = versionId;
+    }
 }
 
 
