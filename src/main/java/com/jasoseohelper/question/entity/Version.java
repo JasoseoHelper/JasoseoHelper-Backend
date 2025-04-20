@@ -1,5 +1,6 @@
 package com.jasoseohelper.question.entity;
 
+import com.jasoseohelper.redis.entity.RedisTempVersion;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,4 +40,11 @@ public class Version {
     @JoinColumn(name="qid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
+
+    public void updateFrom(RedisTempVersion temp) {
+        this.title = temp.getTitle();
+        this.guide = temp.getGuide();
+        this.content = temp.getContent();
+        this.feedback = temp.getFeedback();
+    }
 }
